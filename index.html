@@ -42,7 +42,8 @@
         const API_KEY = '';
         let current_url = `http://api.openweathermap.org/data/2.5/weather?q=${city},jp&units=metric&APPID=${API_KEY}&lang=ja`;
         const forecast_url = `http://api.openweathermap.org/data/2.5/forecast?q=${city},jp&units=metric&APPID=${API_KEY}&lang=ja`;
-        
+        let oldDate = '';
+        let newDate = '';
         const dateName = ['日','月','火','水','木','金','土'];
         const now = new Date();
         let month = now.getMonth() + 1;
@@ -59,6 +60,13 @@
             date.setHours(date.getHours() + 9);
             day[0] = `${(date.getMonth()+1)}月${date.getDate()}日(${dateName[date.getDay()]})`;//○月○日(曜日)
             day[1] = ('0' + date.getHours()).slice(-2) + ":00";
+            newDate = day[0];
+            console.log('newdate');
+            console.log(newDate);
+            if(oldDate === newDate){
+                day[0] = '';
+            }
+            oldDate = newDate;
             return day;
         }
         // 現在の天気の表示処理
@@ -74,18 +82,19 @@
 
         // 天気予報の表示処理
         const forecast_view = (data) =>{
-            console.log('ーーー天気予報ーーー');
-            console.log(data);
-            console.log(data.list[0]);
-            console.log(dateFormat(data.list[0].dt_txt));
-            let html = '<div class="weather-wrap">';
-            
+            // console.log('ーーー天気予報ーーー');
+            // console.log(data);
+            let html = '';
             for(let i=0; i<40; i++){
                 const day = dateFormat(data.list[i].dt_txt);
+                if(day[0] !== ''){
+                    if(html !== ''){
+                        html += '</div>';
+                    }
+                    html += `<div class="weather-report"><div class="weather-date">${day[0]}</div></div><div class="weather-wrap">`;
+                }
                 html += `<div class="weather-item"><div class="weather-time">${day[1]}</div><img src="http://openweathermap.org/img/wn/${data.list[i].weather[0].icon}.png"><div class="weather-text">${data.list[i].weather[0].description}</div><div class="weather-temp">${data.list[i].main.temp}℃</div></div>`;
             }
-            html += '</div>';
-
             forecast.innerHTML = html;
         }
         //現在の天気を取得
@@ -108,8 +117,6 @@
                     return res.json();
                 })
                 .then(data => {
-                    console.log('天気予報のデータ');
-                    console.log(data);
                     forecast_view(data);
                 });
     </script>
