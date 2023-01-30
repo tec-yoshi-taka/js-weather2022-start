@@ -74,10 +74,21 @@
 
         // 天気予報の表示処理
         const forecast_view = (data) =>{
+            console.log('ーーー天気予報ーーー');
+            console.log(data);
             console.log(data.list[0]);
             console.log(dateFormat(data.list[0].dt_txt));
-            forecast.innerHTML = `<div class="weather-wrap"><div class="weather-item"><div class="weather-time">${data.list[0].dt_txt}</div><img src="http://openweathermap.org/img/wn/${data.list[0].weather[0].icon}.png"><div class="weather-text">${data.list[0].weather[0].description}</div><div class="weather-temp">${data.list[0].main.temp}℃</div></div></div>`;
+            let html = '<div class="weather-wrap">';
+            
+            for(let i=0; i<40; i++){
+                const day = dateFormat(data.list[i].dt_txt);
+                html += `<div class="weather-item"><div class="weather-time">${day[1]}</div><img src="http://openweathermap.org/img/wn/${data.list[i].weather[0].icon}.png"><div class="weather-text">${data.list[i].weather[0].description}</div><div class="weather-temp">${data.list[i].main.temp}℃</div></div>`;
+            }
+            html += '</div>';
+
+            forecast.innerHTML = html;
         }
+        //現在の天気を取得
         fetch(current_url)
             .then(res => {
             // res.json()をreturnすることで、次のthenにAPIで取得できる
